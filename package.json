@@ -2,8 +2,8 @@
   "name": "vite-reactts-eslint-prettier",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "vite --host",
+    "build": "tsc && vite build && npx cap sync",
     "serve": "vite preview",
     "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix --ignore-path ./.gitignore",
     "lint:format": "prettier  --loglevel warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@capacitor/android": "^4.6.1",
     "@capacitor/core": "^4.6.1",
+    "@capacitor/toast": "^4.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
