@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">play-capa</string>
+    <string name="title_activity_main">play-capa</string>
+    <string name="package_name">com.tai.capa</string>
+    <string name="custom_url_scheme">com.tai.capa</string>
+</resources>
