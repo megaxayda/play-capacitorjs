@@ -1,6 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { CapacitorPluginDatecsPrinterPlugin } from './definitions';
+import type { CapacitorPluginDatecsPrinterPlugin, ConnectionStatus } from './definitions';
 
 export class CapacitorPluginDatecsPrinterWeb
   extends WebPlugin
@@ -10,7 +10,7 @@ export class CapacitorPluginDatecsPrinterWeb
     super();
   }
 
-  getConnectionStatus(): Promise<string> {
-    return Promise.resolve('Not available on web');
+  getConnectionStatus(): Promise<ConnectionStatus> {
+    return Promise.resolve({ status: 'Not available on web' });
   }
 }

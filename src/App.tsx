@@ -18,8 +18,15 @@ function App() {
 
     ScreenOrientation.orientation().then((res) => setOrientation(res.type));
 
+    printer.addListener('bluetoothDatecsPrinterConnectionChange', (res) => {
+      Toast.show({
+        text: res.status,
+      });
+    });
+
     return () => {
       ScreenOrientation.removeAllListeners();
+      printer.removeAllListeners();
     };
   }, []);
 
@@ -55,7 +62,10 @@ function App() {
           onClick={async () => {
             const res = await printer.getConnectionStatus();
             console.log(res);
-            alert(res);
+            // alert(res.status);
+            await Toast.show({
+              text: res.status,
+            });
           }}
         >
           Get printer status
