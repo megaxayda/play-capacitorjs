@@ -4,6 +4,7 @@ import { Toast } from '@capacitor/toast';
 import React, { useEffect, useState } from 'react';
 
 import logo from './logo.svg';
+import { CapacitorPluginDatecsPrinter as printer } from './plugins/capacitor-plugin-datecs-printer';
 import { ScreenOrientation } from './plugins/screen-orientation';
 
 function App() {
@@ -49,6 +50,15 @@ function App() {
           }}
         >
           Unlock
+        </button>
+        <button
+          onClick={async () => {
+            const res = await printer.getConnectionStatus();
+            console.log(res);
+            alert(res);
+          }}
+        >
+          Get printer status
         </button>
       </div>
     </div>
