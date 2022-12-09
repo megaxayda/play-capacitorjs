@@ -4,11 +4,20 @@ export type ConnectionStatus = {
   status: string;
 };
 
+export type BluetoothAddress = {
+  address: string;
+};
+
 export interface CapacitorPluginDatecsPrinterPlugin {
   /**
    * Returns the bluetooth datecs printer connection status.
    */
   getConnectionStatus(): Promise<ConnectionStatus>;
+
+  /**
+   * Returns the bluetooth paired devices.
+   */
+  getBluetoothPairedDevices(): Promise<any>;
 
   /**
    * Listens for bluetooth datecs printer connection status changes.
@@ -22,4 +31,10 @@ export interface CapacitorPluginDatecsPrinterPlugin {
    * Removes all listeners
    */
   removeAllListeners(): Promise<void>;
+
+  setAddress(addressObj: BluetoothAddress): Promise<void>;
+
+  connect(): Promise<void>;
+
+  print(): Promise<void>;
 }

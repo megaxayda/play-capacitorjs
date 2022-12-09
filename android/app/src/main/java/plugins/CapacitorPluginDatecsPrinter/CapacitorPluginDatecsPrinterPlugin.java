@@ -95,4 +95,31 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
         ret.put("status", connectionStatus);
         notifyListeners(CONNECTION_STATUS_CHANGE, ret);
     }
+
+    @PluginMethod()
+    public void getBluetoothPairedDevices(PluginCall call) {
+        implementation.getBluetoothPairedDevices(call);
+    }
+
+
+    @PluginMethod()
+    public void setAddress(PluginCall call) {
+        String address = call.getString("address");
+        Log.i("address_TEST", address);
+        implementation.setAddress(address);
+
+        JSObject ret = new JSObject();
+        ret.put("address", address);
+        call.resolve(ret);
+    }
+
+    @PluginMethod()
+    public void connect(PluginCall call) {
+        implementation.connect(call);
+    }
+
+    @PluginMethod()
+    public void print(PluginCall call) {
+        implementation.printTaggedText("TEST CONTENT",call);
+    }
 }
