@@ -7,8 +7,6 @@ import React, { useEffect, useState } from 'react';
 import { CapacitorPluginDatecsPrinter as printer } from './plugins/capacitor-plugin-datecs-printer';
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [orientation, setOrientation] = useState<string>('');
   const [log, setLog] = useState('');
   const [address, setAddress] = useState('');
   const [listAddress, setListAddress] = useState([]);
@@ -27,11 +25,11 @@ function App() {
 
   const handleLog = (newLog: string) => {
     setLog((log) => log + '\n' + newLog);
+    console.log(log);
   };
 
   return (
     <div className="App">
-      {orientation}
       <div className="body">
         {/* <button
           onClick={async () => {
@@ -48,7 +46,6 @@ function App() {
         <button
           onClick={async () => {
             const res = await printer.getBluetoothPairedDevices();
-            console.log('getBluetoothPairedDevices:', res);
             handleLog(JSON.stringify(res));
             setAddress(res.data[0].address);
             setListAddress(res.data);
@@ -68,7 +65,6 @@ function App() {
             {'Connect ' + get(e, 'name', 'No name ' + index)}
           </button>
         ))}
-
         <button
           onClick={async () => {
             const res = await printer.connect();
