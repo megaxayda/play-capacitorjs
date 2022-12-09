@@ -1,6 +1,5 @@
 import './App.css';
 
-import { Toast } from '@capacitor/toast';
 import get from 'lodash.get';
 import React, { useEffect, useState } from 'react';
 
@@ -25,7 +24,7 @@ function App() {
 
   const handleLog = (newLog: string) => {
     setLog((log) => log + '\n' + newLog);
-    console.log(log);
+    console.info(log);
   };
 
   return (

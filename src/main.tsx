@@ -13,7 +13,7 @@ Sentry.init({
   integrations: [
     new BrowserTracing(),
     new CaptureConsole({
-      levels: ['log', 'info', 'warn', 'error', 'debug', 'assert'],
+      levels: ['info'],
     }),
   ],
   // Set tracesSampleRate to 1.0 to capture 100%
