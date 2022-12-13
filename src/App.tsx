@@ -1,86 +1,89 @@
 import './App.css';
 
 import get from 'lodash.get';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CapacitorPluginDatecsPrinter as printer } from './plugins/capacitor-plugin-datecs-printer';
 
 function App() {
-  const [log, setLog] = useState('');
-  const [address, setAddress] = useState('');
+  const [log, setLog] = useState<string[]>([]);
   const [listAddress, setListAddress] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // useEffect(() => {
-  //   printer.addListener('bluetoothDatecsPrinterConnectionChange', (res) => {
-  //     Toast.show({
-  //       text: res.status,
-  //     });
-  //   });
+  useEffect(() => {
+    const init = async () => {
+      const res = await printer.getBluetoothPairedDevices();
+      handleLog(`Paired Devices: ${JSON.stringify(res)}`);
+      setListAddress(res.data);
 
-  //   return () => {
-  //     printer.removeAllListeners();
-  //   };
-  // }, []);
+      const res2 = await printer.getConnectionStatus();
+      handleLog(`BL status: ${JSON.stringify(res2)}`);
+
+      printer.addListener('bluetoothDatecsPrinterConnectionChange', async (res) => {
+        handleLog(`BL status (live): ${JSON.stringify(res)}`);
+        const devices = await printer.getBluetoothPairedDevices();
+        handleLog(`Paired Devices (live): ${JSON.stringify(devices)}`);
+        setListAddress(devices.data);
+      });
+    };
+
+    init();
+
+    return () => {
+      printer.removeAllListeners();
+    };
+  }, []);
 
   const handleLog = (newLog: string) => {
-    setLog((log) => log + '\n' + newLog);
-    console.info(log);
+    setLog((log) => [...log, newLog]);
+    console.info(newLog);
   };
 
   return (
     <div className="App">
       <div className="body">
-        {/* <button
-          onClick={async () => {
-            const res = await printer.getConnectionStatus();
-            console.log(res);
-            // alert(res.status);
-            await Toast.show({
-              text: res.status,
-            });
-          }}
-        >
-          Get printer status
-        </button> */}
         <button
-          onClick={async () => {
-            const res = await printer.getBluetoothPairedDevices();
-            handleLog(JSON.stringify(res));
-            setAddress(res.data[0].address);
-            setListAddress(res.data);
+          style={{ margin: '10px' }}
+          onClick={() => {
+            setLog([]);
           }}
         >
-          Get printers
+          Clear log
         </button>
-        {listAddress.map((e, index) => (
-          <button
-            key={index}
-            style={{ backgroundColor: 'green' }}
-            onClick={async () => {
-              const res = await printer.setAddress({ address });
-              handleLog(JSON.stringify(res));
-            }}
-          >
-            {'Connect ' + get(e, 'name', 'No name ' + index)}
-          </button>
+        {listAddress &&
+          listAddress.map((e, index) => (
+            <button
+              key={index}
+              disabled={loading}
+              style={{ margin: '10px' }}
+              onClick={async () => {
+                setLoading(true);
+                const address = get(e, 'address');
+                if (address) {
+                  const connectRes = await printer.connect({
+                    address,
+                  });
+                  handleLog(JSON.stringify(connectRes));
+
+                  const res = await printer.print({
+                    content: `Pin code: ${Math.floor(Math.random() * 100000000)
+                      .toString()
+                      .substring(0, 6)}{br}`,
+                  });
+                  handleLog(JSON.stringify(res));
+                  setLoading(false);
+                }
+              }}
+            >
+              {'Print with ' + get(e, 'name', 'No name ' + index)}
+            </button>
+          ))}
+
+        {log.map((e, index) => (
+          <p key={index} style={{ textAlign: 'left' }}>
+            {index + ' : ' + e}
+          </p>
         ))}
-        <button
-          onClick={async () => {
-            const res = await printer.connect();
-            handleLog(JSON.stringify(res));
-          }}
-        >
-          Connect printer
-        </button>
-        <button
-          onClick={async () => {
-            const res = await printer.print();
-            handleLog(JSON.stringify(res));
-          }}
-        >
-          Print
-        </button>
-        <p>{log}</p>
       </div>
     </div>
   );

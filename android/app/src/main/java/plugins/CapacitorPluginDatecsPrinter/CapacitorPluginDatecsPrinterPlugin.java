@@ -37,12 +37,12 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
             public void onReceive(Context context, Intent intent) {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
-                if(state == BluetoothAdapter.STATE_ON && getBluetoothConnectionStatus()) {
+                if (state == BluetoothAdapter.STATE_ON && getBluetoothConnectionStatus()) {
                     updateConnectionStatus("connected");
                     return;
                 }
 
-                if(state == BluetoothAdapter.STATE_OFF) {
+                if (state == BluetoothAdapter.STATE_OFF) {
                     updateConnectionStatus("disconnected");
                     return;
                 }
@@ -71,7 +71,7 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
         String status = "disconnected";
         final boolean isConnected = getBluetoothConnectionStatus();
 
-        if(isConnected) {
+        if (isConnected) {
             status = "connected";
         }
 
@@ -106,7 +106,7 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
     public void setAddress(PluginCall call) {
         String address = call.getString("address");
         Log.i("address_TEST", address);
-        implementation.setAddress(address);
+//        implementation.setAddress(address);
 
         JSObject ret = new JSObject();
         ret.put("address", address);
@@ -115,11 +115,15 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
 
     @PluginMethod()
     public void connect(PluginCall call) {
-        implementation.connect(call);
+        String address = call.getString("address");
+        implementation.connect(address, call);
     }
 
     @PluginMethod()
     public void print(PluginCall call) {
-        implementation.printTaggedText("TEST CONTENT",call);
+        String content = call.getString("content");
+        Log.i("address_TEST", content);
+
+        implementation.printTaggedText(content, call);
     }
 }

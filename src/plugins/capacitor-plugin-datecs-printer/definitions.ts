@@ -4,7 +4,11 @@ export type ConnectionStatus = {
   status: string;
 };
 
-export type BluetoothAddress = {
+export type PrintParam = {
+  content: string;
+};
+
+export type ConnectParam = {
   address: string;
 };
 
@@ -32,9 +36,9 @@ export interface CapacitorPluginDatecsPrinterPlugin {
    */
   removeAllListeners(): Promise<void>;
 
-  setAddress(addressObj: BluetoothAddress): Promise<void>;
+  // setAddress(addressObj: BluetoothAddress): Promise<void>;
 
-  connect(): Promise<void>;
+  connect(connectParam: ConnectParam): Promise<void>;
 
-  print(): Promise<void>;
+  print(param: PrintParam): Promise<void>;
 }

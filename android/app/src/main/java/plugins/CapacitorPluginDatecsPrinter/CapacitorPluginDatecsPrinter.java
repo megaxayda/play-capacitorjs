@@ -35,7 +35,7 @@ public class CapacitorPluginDatecsPrinter {
     @Nullable
     private AppCompatActivity activity;
     private BroadcastReceiver receiver;
-    private String mAddress;
+//    private String mAddress;
     private Printer mPrinter;
     private ProtocolAdapter mProtocolAdapter;
     private BluetoothSocket mBluetoothSocket;
@@ -94,7 +94,10 @@ public class CapacitorPluginDatecsPrinter {
         try {
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (mBluetoothAdapter == null) {
-                call.reject("NO_BL_ADAPTOR");
+                JSONArray json = new JSONArray();
+                JSObject ret = new JSObject();
+                ret.put("data", json);
+                call.resolve(ret);
                 return;
             }
 //            if (!mBluetoothAdapter.isEnabled()) {
@@ -137,19 +140,26 @@ public class CapacitorPluginDatecsPrinter {
                 call.resolve(ret);
 //                callbackContext.success(json);
             } else {
-                call.reject("NO_BT_DEVICE");
+                JSONArray json = new JSONArray();
+                JSObject ret = new JSObject();
+                ret.put("data", json);
+                call.resolve(ret);
+//                call.reject("NO_BT_DEVICE");
             }
         } catch (Exception e) {
             Log.e("PLUGIN_PRINTER_ERROR", e.getMessage());
             e.printStackTrace();
-            call.reject(e.getMessage());
+//            call.reject(e.getMessage());
+            JSONArray json = new JSONArray();
+            JSObject ret = new JSObject();
+            ret.put("data", json);
+            call.resolve(ret);
         }
     }
 
-    public void setAddress(String address) {
-        this.mAddress = address;
-        Log.i("DEBUG_PRINTER", address);
-    }
+//    public void setAddress(String address) {
+//        this.mAddress = address;
+//    }
 
     private void closeActiveConnections() {
         /**
@@ -257,7 +267,6 @@ public class CapacitorPluginDatecsPrinter {
 
         try {
             initializePrinter(in, out, call);
-            Toast.makeText(activity, "PRINTER_CONNECTED", Toast.LENGTH_SHORT).show();
             Log.i("DEBUG_PRINTER", "CONNECTED");
 
             JSObject ret = new JSObject();
@@ -275,11 +284,10 @@ public class CapacitorPluginDatecsPrinter {
         }
     }
 
-    public void connect(PluginCall call) {
+    public void connect(String address, PluginCall call) {
         closeActiveConnections();
-        if (BluetoothAdapter.checkBluetoothAddress(mAddress)) {
-            Log.i("DEBUG_PRINTER", "CONNECTING");
-            establishBluetoothConnection(mAddress, call);
+        if (BluetoothAdapter.checkBluetoothAddress(address)) {
+            establishBluetoothConnection(address, call);
         }
     }
 
@@ -292,6 +300,8 @@ public class CapacitorPluginDatecsPrinter {
 
             JSObject ret = new JSObject();
             ret.put("status", "PRINT_SUCCESS");
+            ret.put("content", text);
+
             call.resolve(ret);
 
         } catch (Exception e) {

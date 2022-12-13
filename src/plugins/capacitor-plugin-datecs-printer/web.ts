@@ -1,10 +1,6 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type {
-  BluetoothAddress,
-  CapacitorPluginDatecsPrinterPlugin,
-  ConnectionStatus,
-} from './definitions';
+import type { CapacitorPluginDatecsPrinterPlugin, ConnectionStatus } from './definitions';
 
 export class CapacitorPluginDatecsPrinterWeb
   extends WebPlugin
