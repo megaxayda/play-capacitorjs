@@ -68,7 +68,7 @@ function App() {
                   const res = await printer.print({
                     content: `Pin code: ${Math.floor(Math.random() * 100000000)
                       .toString()
-                      .substring(0, 6)}{br}{br}{br}{br}{br}{br}{br}{br}{br}{br}`,
+                      .substring(0, 6)}{br}{br}{br}{br}`,
                   });
                   handleLog(JSON.stringify(res));
                   setLoading(false);
