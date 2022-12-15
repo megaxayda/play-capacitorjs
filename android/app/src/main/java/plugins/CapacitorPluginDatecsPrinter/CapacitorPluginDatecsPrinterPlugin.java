@@ -21,13 +21,39 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 import com.getcapacitor.annotation.Permission;
+import com.getcapacitor.annotation.PermissionCallback;
 
 import java.util.Set;
 
-@CapacitorPlugin(name = "CapacitorPluginDatecsPrinter", permissions = {@Permission(alias = "bluetooth", strings = {Manifest.permission.BLUETOOTH_CONNECT})})
+@CapacitorPlugin(name = "CapacitorPluginDatecsPrinter",
+        permissions = {
+                @Permission(alias = "bluetooth",
+                        strings = {Manifest.permission.INTERNET,
+                                Manifest.permission.BLUETOOTH,
+                                Manifest.permission.BLUETOOTH_CONNECT,
+                                Manifest.permission.BLUETOOTH_ADMIN}
+                ),
+        })
 public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
-    public static final String CONNECTION_STATUS_CHANGE = "bluetoothDatecsPrinterConnectionChange";
+    public static final String BLUETOOTH_STATUS_CHANGE = "bluetoothChange";
+    private static final String BLUETOOTH_ON = "BLUETOOTH_ON";
+    private static final String BLUETOOTH_OFF = "BLUETOOTH_OFF";
     private CapacitorPluginDatecsPrinter implementation;
+
+    private boolean isBluetoothOn(int state) {
+        return state == BluetoothAdapter.STATE_ON;
+    }
+
+    private boolean getBluetoothConnectionStatus() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        return isBluetoothOn(bluetoothAdapter.getState());
+    }
+
+    private void updateConnectionStatus(String connectionStatus) {
+        JSObject ret = new JSObject();
+        ret.put("status", connectionStatus);
+        notifyListeners(BLUETOOTH_STATUS_CHANGE, ret);
+    }
 
     @Override
     public void load() {
@@ -37,47 +63,14 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
             public void onReceive(Context context, Intent intent) {
                 final int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR);
 
-                if (state == BluetoothAdapter.STATE_ON && getBluetoothConnectionStatus()) {
-                    updateConnectionStatus("connected");
-                    return;
+                if (isBluetoothOn(state)) {
+                    updateConnectionStatus(BLUETOOTH_ON);
+                } else {
+                    updateConnectionStatus(BLUETOOTH_OFF);
                 }
-
-                if (state == BluetoothAdapter.STATE_OFF) {
-                    updateConnectionStatus("disconnected");
-                    return;
-                }
-
+                return;
             }
         });
-    }
-
-    private boolean getBluetoothConnectionStatus() {
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        @SuppressLint("MissingPermission") Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-
-        if (pairedDevices.size() > 0) {
-            // There are paired devices. Get the name and address of each paired device.
-            for (BluetoothDevice device : pairedDevices) {
-                @SuppressLint("MissingPermission") String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-            }
-            return true;
-        }
-        return false;
-    }
-
-    @PluginMethod()
-    public void getConnectionStatus(PluginCall call) {
-        String status = "disconnected";
-        final boolean isConnected = getBluetoothConnectionStatus();
-
-        if (isConnected) {
-            status = "connected";
-        }
-
-        JSObject ret = new JSObject();
-        ret.put("status", status);
-        call.resolve(ret);
     }
 
     @Override
@@ -90,27 +83,22 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
         implementation.stopMonitoring(getActivity());
     }
 
-    private void updateConnectionStatus(String connectionStatus) {
+    @PluginMethod()
+    public void getConnectionStatus(PluginCall call) {
+        String status = BLUETOOTH_OFF;
+
+        if (getBluetoothConnectionStatus()) {
+            status = BLUETOOTH_ON;
+        }
+
         JSObject ret = new JSObject();
-        ret.put("status", connectionStatus);
-        notifyListeners(CONNECTION_STATUS_CHANGE, ret);
+        ret.put("status", status);
+        call.resolve(ret);
     }
 
     @PluginMethod()
     public void getBluetoothPairedDevices(PluginCall call) {
         implementation.getBluetoothPairedDevices(call);
-    }
-
-
-    @PluginMethod()
-    public void setAddress(PluginCall call) {
-        String address = call.getString("address");
-        Log.i("address_TEST", address);
-//        implementation.setAddress(address);
-
-        JSObject ret = new JSObject();
-        ret.put("address", address);
-        call.resolve(ret);
     }
 
     @PluginMethod()
@@ -122,8 +110,6 @@ public class CapacitorPluginDatecsPrinterPlugin extends Plugin {
     @PluginMethod()
     public void print(PluginCall call) {
         String content = call.getString("content");
-        Log.i("address_TEST", content);
-
         implementation.printTaggedText(content, call);
     }
 }

@@ -9,20 +9,19 @@ export class CapacitorPluginDatecsPrinterWeb
   constructor() {
     super();
   }
-  setAddress(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
   connect(): Promise<void> {
-    return Promise.resolve();
+    throw this.unavailable('Not available on web.');
   }
+
   print(): Promise<void> {
-    return Promise.resolve();
+    throw this.unavailable('Not available on web.');
   }
+
   getBluetoothPairedDevices(): Promise<any> {
-    return Promise.resolve({ status: 'Not available on web' });
+    throw this.unavailable('Not available on web.');
   }
 
   getConnectionStatus(): Promise<ConnectionStatus> {
-    return Promise.resolve({ status: 'Not available on web' });
+    throw this.unavailable('Not available on web.');
   }
 }

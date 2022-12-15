@@ -1,5 +1,6 @@
 import './App.css';
 
+import { Device } from '@capacitor/device';
 import get from 'lodash.get';
 import { useEffect, useState } from 'react';
 
@@ -12,6 +13,13 @@ function App() {
 
   useEffect(() => {
     const init = async () => {
+      const info = await Device.getInfo();
+      if (info.platform !== 'android') {
+        handleLog('platform: not android!');
+        return;
+      }
+
+      handleLog('platform: android!');
       const res = await printer.getBluetoothPairedDevices();
       handleLog(`Paired Devices: ${JSON.stringify(res)}`);
       setListAddress(res.data);
@@ -19,7 +27,7 @@ function App() {
       const res2 = await printer.getConnectionStatus();
       handleLog(`BL status: ${JSON.stringify(res2)}`);
 
-      printer.addListener('bluetoothDatecsPrinterConnectionChange', async (res) => {
+      printer.addListener('bluetoothChange', async (res) => {
         handleLog(`BL status (live): ${JSON.stringify(res)}`);
         const devices = await printer.getBluetoothPairedDevices();
         handleLog(`Paired Devices (live): ${JSON.stringify(devices)}`);
@@ -68,7 +76,7 @@ function App() {
                   const res = await printer.print({
                     content: `Pin code: ${Math.floor(Math.random() * 100000000)
                       .toString()
-                      .substring(0, 6)}{br}{br}{br}{br}`,
+                      .substring(0, 6)}{br}{br}{br}{br}{br}`,
                   });
                   handleLog(JSON.stringify(res));
                   setLoading(false);

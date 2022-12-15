@@ -27,7 +27,7 @@ export interface CapacitorPluginDatecsPrinterPlugin {
    * Listens for bluetooth datecs printer connection status changes.
    */
   addListener(
-    eventName: 'bluetoothDatecsPrinterConnectionChange',
+    eventName: 'bluetoothChange',
     listenerFunc: (res: ConnectionStatus) => void,
   ): Promise<PluginListenerHandle> & PluginListenerHandle;
 

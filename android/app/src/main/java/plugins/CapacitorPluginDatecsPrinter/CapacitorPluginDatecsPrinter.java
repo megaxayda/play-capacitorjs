@@ -35,7 +35,6 @@ public class CapacitorPluginDatecsPrinter {
     @Nullable
     private AppCompatActivity activity;
     private BroadcastReceiver receiver;
-//    private String mAddress;
     private Printer mPrinter;
     private ProtocolAdapter mProtocolAdapter;
     private BluetoothSocket mBluetoothSocket;
@@ -68,10 +67,6 @@ public class CapacitorPluginDatecsPrinter {
         this.activity = activity;
     }
 
-    public String getConnectionStatus() {
-        return "Work in progress";
-    }
-
     public void setReceiver(BroadcastReceiver receiver) {
         this.receiver = receiver;
     }
@@ -100,10 +95,7 @@ public class CapacitorPluginDatecsPrinter {
                 call.resolve(ret);
                 return;
             }
-//            if (!mBluetoothAdapter.isEnabled()) {
-//                Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//                this.mCordova.getActivity().startActivityForResult(enableBluetooth, 0);
-//            }
+
             @SuppressLint("MissingPermission") Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
             if (pairedDevices.size() > 0) {
                 JSONArray json = new JSONArray();
@@ -138,28 +130,20 @@ public class CapacitorPluginDatecsPrinter {
                 JSObject ret = new JSObject();
                 ret.put("data", json);
                 call.resolve(ret);
-//                callbackContext.success(json);
             } else {
                 JSONArray json = new JSONArray();
                 JSObject ret = new JSObject();
                 ret.put("data", json);
                 call.resolve(ret);
-//                call.reject("NO_BT_DEVICE");
             }
         } catch (Exception e) {
-            Log.e("PLUGIN_PRINTER_ERROR", e.getMessage());
             e.printStackTrace();
-//            call.reject(e.getMessage());
             JSONArray json = new JSONArray();
             JSObject ret = new JSObject();
             ret.put("data", json);
             call.resolve(ret);
         }
     }
-
-//    public void setAddress(String address) {
-//        this.mAddress = address;
-//    }
 
     private void closeActiveConnections() {
         /**
@@ -216,7 +200,6 @@ public class CapacitorPluginDatecsPrinter {
         mPrinter.setConnectionListener(new Printer.ConnectionListener() {
             @Override
             public void onDisconnect() {
-                Log.i("DEBUG_PRINTER", "PRINTER_DISCONNECTED");
             }
         });
     }
@@ -246,7 +229,6 @@ public class CapacitorPluginDatecsPrinter {
                 out = mBluetoothSocket.getOutputStream();
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Log.i("DEBUG_PRINTER", String.valueOf(ex));
 
                 JSObject ret = new JSObject();
                 ret.put("status", "FAILED_TO_CONNECT_1");
@@ -256,7 +238,6 @@ public class CapacitorPluginDatecsPrinter {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("DEBUG_PRINTER", String.valueOf(e));
 
             JSObject ret = new JSObject();
             ret.put("status", "FAILED_TO_CONNECT_2");
@@ -267,14 +248,12 @@ public class CapacitorPluginDatecsPrinter {
 
         try {
             initializePrinter(in, out, call);
-            Log.i("DEBUG_PRINTER", "CONNECTED");
 
             JSObject ret = new JSObject();
             ret.put("status", "PRINTER_CONNECTED");
             call.resolve(ret);
         } catch (IOException e) {
             e.printStackTrace();
-            Log.i("DEBUG_PRINTER", String.valueOf(e));
 
             JSObject ret = new JSObject();
             ret.put("status", "FAILED_TO_INITIALIZE");
@@ -296,17 +275,13 @@ public class CapacitorPluginDatecsPrinter {
             mPrinter.printTaggedText(text, "ISO-8859-1");
             mPrinter.flush();
 
-            Log.i("DEBUG_PRINTER", "SUCCESS");
-
             JSObject ret = new JSObject();
             ret.put("status", "PRINT_SUCCESS");
             ret.put("content", text);
-
             call.resolve(ret);
 
         } catch (Exception e) {
             e.printStackTrace();
-            Log.i("DEBUG_PRINTER", String.valueOf(e));
 
             JSObject ret = new JSObject();
             ret.put("status", "PRINT_FAILED");
@@ -314,6 +289,4 @@ public class CapacitorPluginDatecsPrinter {
             call.resolve(ret);
         }
     }
-
-
 }
